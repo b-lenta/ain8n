@@ -1,0 +1,40 @@
+name: Auto-Update N8N on Railway
+
+on:
+  schedule:
+    # Запускать каждый понедельник в 03:00 UTC
+    # Вы можете настроить расписание по своему усмотрению.
+    # Подробнее о синтаксисе cron: https://crontab.guru/
+    - cron: '0 3 * * MON'
+  workflow_dispatch:
+    # Позволяет запускать вручную из интерфейса GitHub Actions
+
+jobs:
+  redeploy-n8n:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Login to Railway (optional, but good for testing connection)
+        run: railway login --token ${{ secrets.RAILWAY_TOKEN }}
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }} # Передаем токен как переменную окружения
+
+      - name: Get Railway Project and Service IDs
+        id: railway_ids
+        run: |
+          echo "RAILWAY_PROJECT_ID=${{ vars.RAILWAY_PROJECT_ID }}" >> $GITHUB_ENV
+          echo "RAILWAY_SERVICE_ID=${{ vars.RAILWAY_SERVICE_ID }}" >> $GITHUB_ENV
+        env:
+          RAILWAY_PROJECT_ID: c69d3df3-6bc6-454e-9468-67971def343a # Замените на ваш ID проекта
+          RAILWAY_SERVICE_ID: c4ffd1ef-026f-4fe4-9365-7aa7d046cec8 # Замените на ваш ID сервиса N8N
+
+      - name: Restart N8N Service on Railway
+        run: railway restart --project ${{ env.RAILWAY_PROJECT_ID }} --service ${{ env.RAILWAY_SERVICE_ID }}
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }} # Токен для аутентификации команды Railway CLI
