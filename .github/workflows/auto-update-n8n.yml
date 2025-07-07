@@ -20,10 +20,10 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
-      - name: Login to Railway (optional, but good for testing connection)
-        run: railway login --token ${{ secrets.RAILWAY_TOKEN }}
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }} # Передаем токен как переменную окружения
+# - name: Login to Railway (optional, but good for testing connection)
+      #   run: railway login --token ${{ secrets.RAILWAY_TOKEN }}
+      #   env:
+      #     RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }} # Передаем токен как переменную окружения
 
       - name: Get Railway Project and Service IDs
         id: railway_ids
