@@ -24,7 +24,7 @@ jobs:
 
       # НОВЫЙ ШАГ ВМЕСТО ПРЕДЫДУЩЕГО С CURL
       - name: Deploy to Railway (with no-cache)
-        uses: railwayapp/gh-action@v3
+        uses: railwayapp/gh-action@v2
         with:
           service: ${{ env.RAILWAY_SERVICE_ID }}
           project: ${{ env.RAILWAY_PROJECT_ID }}
