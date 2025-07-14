@@ -19,14 +19,14 @@ jobs:
           echo "RAILWAY_PROJECT_ID=${{ vars.RAILWAY_PROJECT_ID }}" >> $GITHUB_ENV
           echo "RAILWAY_SERVICE_ID=${{ vars.RAILWAY_SERVICE_ID }}" >> $GITHUB_ENV
         env:
-          RAILWAY_PROJECT_ID: c69d3df3-6bc6-454e-9468-67971def343a # Ваш ID проекта
-          RAILWAY_SERVICE_ID: c4ffd1ef-026f-4fe4-9365-7aa7d046cec8 # Ваш ID сервиса N8N
+          RAILWAY_PROJECT_ID: c69d3df3-6bc6-454e-9468-67971def343a # Обязательно замените на ваш ID проекта
+          RAILWAY_SERVICE_ID: c4ffd1ef-026f-4fe4-9365-7aa7d046cec8 # Обязательно замените на ваш ID сервиса N8N
 
-      # ИСПРАВЛЕННЫЙ ШАГ
-      - name: Deploy to Railway (with no-cache)
-        uses: railwayapp/github-action@v3 # ВОТ ТУТ ИСПРАВЛЕНИЕ: ДОБАВЛЕНО "hub" В "github-action"
-        with:
-          service: ${{ env.RAILWAY_SERVICE_ID }}
-          project: ${{ env.RAILWAY_PROJECT_ID }}
-          token: ${{ secrets.RAILWAY_TOKEN }}
-          no_cache: true
+      - name: Trigger N8N Redeploy via Railway API
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.RAILWAY_TOKEN }}" \
+            "https://api.railway.app/v2/projects/${{ env.RAILWAY_PROJECT_ID }}/services/${{ env.RAILWAY_SERVICE_ID }}/deploy"
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }} # Токен для аутентификации в API
