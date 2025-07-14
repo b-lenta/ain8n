@@ -3,26 +3,62 @@ name: Auto-Update N8N on Railway
 on:
   schedule:
     - cron: '0 3 * * MON' # Запускать каждый понедельник в 03:00 UTC
-  workflow_dispatch:
+  workflow_dispatch: # Позволяет запускать вручную
 
 jobs:
   redeploy-n8n:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Это разрешение необходимо для коммита изменений обратно в репозиторий
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Get Railway Project and Service IDs
-        id: railway_ids
+      - name: Add or Update Cache Buster in Dockerfile
+        id: cache_buster_step
         run: |
-          echo "RAILWAY_PROJECT_ID=${{ vars.RAILWAY_PROJECT_ID }}" >> $GITHUB_ENV
-          echo "RAILWAY_SERVICE_ID=${{ vars.RAILWAY_SERVICE_ID }}" >> $GITHUB_ENV
-        env:
-          RAILWAY_PROJECT_ID: c69d3df3-6bc6-454e-9468-67971def343a # Обязательно замените на ваш ID проекта
-          RAILWAY_SERVICE_ID: c4ffd1ef-026f-4fe4-9365-7aa7d046cec8 # Обязательно замените на ваш ID сервиса N8N
+          # Генерируем уникальное значение на основе текущей даты/времени
+          CURRENT_DATE=$(date +%Y%m%d%H%M%S)
+          DOCKERFILE_PATH="Dockerfile" # Путь к вашему Dockerfile в корне репозитория
 
-      - name: Trigger N8N Redeploy via Railway API
+          # Проверяем, существует ли строка ARG CACHE_BUSTER= в Dockerfile
+          if grep -q "ARG CACHE_BUSTER=" "$DOCKERFILE_PATH"; then
+            # Если существует, заменяем ее на новую с актуальной датой
+            sed -i "/ARG CACHE_BUSTER=/c\ARG CACHE_BUSTER=$CURRENT_DATE" "$DOCKERFILE_PATH"
+            echo "Existing ARG CACHE_BUSTER updated in Dockerfile."
+          else
+            # Если строки нет, добавляем ее в конец файла
+            echo "" >> "$DOCKERFILE_PATH" # Добавляем новую строку, если файл заканчивается без перевода строки
+            echo "ARG CACHE_BUSTER=$CURRENT_DATE" >> "$DOCKERFILE_PATH"
+            echo "New ARG CACHE_BUSTER added to Dockerfile."
+          fi
+
+          # Проверяем, были ли реальные изменения в файле после sed
+          if git diff --exit-code "$DOCKERFILE_PATH"; then
+            echo "Dockerfile unchanged, skipping commit."
+            echo "dockerfile_changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "Dockerfile modified. Committing changes."
+            echo "dockerfile_changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and Push Dockerfile Changes
+        # Выполняем этот шаг только если Dockerfile был фактически изменен
+        if: steps.cache_buster_step.outputs.dockerfile_changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Dockerfile
+          # Добавляем [skip ci] в сообщение коммита, чтобы избежать рекурсивного запуска этого же workflow
+          git commit -m "chore: Auto-update N8N (cache bust for new base image pull) [skip ci]"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Токен по умолчанию имеет необходимые права для записи
+
+      # Этот шаг теперь является резервным, так как Railway должен сам развернуться по push-у.
+      # Однако, оставляем его, так как он был в вашем "рабочем" скрипте.
+      - name: Trigger N8N Redeploy via Railway API (Fallback/Redundant)
         run: |
           curl -X POST \
             -H "Content-Type: application/json" \
