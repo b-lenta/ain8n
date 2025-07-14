@@ -22,11 +22,11 @@ jobs:
           RAILWAY_PROJECT_ID: c69d3df3-6bc6-454e-9468-67971def343a # Ваш ID проекта
           RAILWAY_SERVICE_ID: c4ffd1ef-026f-4fe4-9365-7aa7d046cec8 # Ваш ID сервиса N8N
 
-      # НОВЫЙ ШАГ ВМЕСТО ПРЕДЫДУЩЕГО С CURL
+      # ИСПРАВЛЕННЫЙ ШАГ
       - name: Deploy to Railway (with no-cache)
-        uses: railwayapp/gh-action@v2
+        uses: railwayapp/github-action@v3 # ВОТ ТУТ ИСПРАВЛЕНИЕ: ДОБАВЛЕНО "hub" В "github-action"
         with:
           service: ${{ env.RAILWAY_SERVICE_ID }}
           project: ${{ env.RAILWAY_PROJECT_ID }}
           token: ${{ secrets.RAILWAY_TOKEN }}
-          no_cache: true # Этот параметр заставит Railway пересобрать образ без кэша.
+          no_cache: true
