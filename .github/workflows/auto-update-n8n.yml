@@ -2,7 +2,7 @@ name: Auto-Update N8N on Railway
 
 on:
   schedule:
-    - cron: '0 3 * * MON' # Запускать каждый понедельник в 03:00 UTC
+    - cron: '0 22 * * 2,5' # Запускать каждый вторник и пятницу в 22:00 UTC
   workflow_dispatch: # Позволяет запускать вручную
 
 jobs:
