@@ -20,3 +20,5 @@ RUN ln -s /usr/bin/ffmpeg /home/node/.n8n/nodes/node_modules/ffmpeg-static/ffmpe
 RUN chown -R node:node /home/node/.n8n
 
 USER node
+
+ARG CACHE_BUSTER=20250715134855
