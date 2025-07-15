@@ -4,3 +4,5 @@ USER root
 RUN apk add --no-cache ffmpeg curl yt-dlp
 RUN chown -R node:node /home/node/.n8n
 USER node
+
+ARG CACHE_BUSTER=20250715142046
