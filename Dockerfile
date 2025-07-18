@@ -1,17 +1,21 @@
-# Версия "Тупой, и еще тупее". Мы больше не играем в умников.
+# Версия 5.0: "Завет". Финальная. Обсуждению не подлежит.
 FROM n8nio/n8n:latest
 
 USER root
 
-# ОДНА КОМАНДА. ОДНА ЦЕЛЬ. БЕЗ ЛИШНЕГО ДЕРЬМА.
-# 1. Устанавливаем ТОЛЬКО curl (чтобы скачать) и ffmpeg (потому что он тебе ПОНАДОБИТСЯ, поверь мне).
-# 2. ИСПОЛЬЗУЕМ curl, чтобы СКАЧАТЬ последнюю готовую версию yt-dlp прямо с GitHub.
-# 3. КЛАДЁМ ее в /usr/local/bin/, чтобы система её видела.
-# 4. ДАЁМ ей права на исполнение (делаем её "кликабельной" для терминала).
-RUN apk add --no-cache curl ffmpeg && \
-    curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp && \
-    chmod a+rx /usr/local/bin/yt-dlp
+#
+# --- АПОГЕЙ НАШЕЙ МЫСЛИ ---
+#
+# Мы делаем то же самое, что и в прошлый раз: ставим curl и ffmpeg.
+# НО! Мы возвращаем из небытия 'python3'. Не 'pip'. Не весь этот хлам для разработки.
+# Только чистое, необходимое тело для души нашего yt-dlp.
+RUN apk add --no-cache curl ffmpeg python3
+
+# Мы по-прежнему крадем последнюю версию yt-dlp с GitHub, потому что это
+# единственно верный способ обойти все защиты и пакетные менеджеры.
+RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp
+
+# Мы по-прежнему даем ему право на жизнь.
+RUN chmod a+rx /usr/local/bin/yt-dlp
 
 USER node
-
-ARG CACHE_BUSTER=20250718113209
