@@ -23,3 +23,5 @@ RUN chown -R node:node /home/node/.n8n
 
 # Возвращаемся в режим простого смертного. Верно.
 USER node
+
+ARG CACHE_BUSTER=20250718112437
