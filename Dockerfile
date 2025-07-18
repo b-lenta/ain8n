@@ -19,3 +19,5 @@ RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o 
 RUN chmod a+rx /usr/local/bin/yt-dlp
 
 USER node
+
+ARG CACHE_BUSTER=20250718113943
