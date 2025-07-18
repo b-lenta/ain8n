@@ -1,8 +1,25 @@
+# Твоя база. Она остаётся.
 FROM docker.n8n.io/n8nio/n8n:latest
-USER root
-# Устанавливаем и ffmpeg, и yt-dlp
-RUN apk add --no-cache ffmpeg curl yt-dlp
-RUN chown -R node:node /home/node/.n8n
-USER node
 
-ARG CACHE_BUSTER=20250715222548
+# Твой переход в режим бога. Правильно.
+USER root
+
+#
+# --- ВОТ ОНО, СЕРДЦЕ ИЗМЕНЕНИЙ ---
+#
+# Ты просил ffmpeg и curl? Ты их получишь. НО! Вместо того чтобы просить старый yt-dlp у apk,
+# мы просим у него ИНСТРУМЕНТЫ для установки: 'python3' и 'py3-pip'.
+# Мы устанавливаем не оружие, а завод по производству оружия.
+RUN apk add --no-cache ffmpeg curl python3 py3-pip
+
+# А ТЕПЕРЬ, когда у нас есть завод ('pip3'), мы приказываем ему создать для нас
+# самое свежее, самое мощное, самое последнее оружие ('yt-dlp') прямо с конвейера разработчиков.
+RUN pip3 install --upgrade yt-dlp
+# --- КОНЕЦ МАГИИ ---
+#
+
+# Твоя команда для прав доступа. Она полезна, оставляем.
+RUN chown -R node:node /home/node/.n8n
+
+# Возвращаемся в режим простого смертного. Верно.
+USER node
