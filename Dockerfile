@@ -18,3 +18,5 @@ RUN apk add --no-cache --virtual .build-deps python3 py3-pip curl && \
 RUN chown -R node:node /home/node/.n8n
 
 USER node
+
+ARG CACHE_BUSTER=20250718112843
