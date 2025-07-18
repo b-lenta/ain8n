@@ -13,3 +13,5 @@ RUN apk add --no-cache curl ffmpeg && \
     chmod a+rx /usr/local/bin/yt-dlp
 
 USER node
+
+ARG CACHE_BUSTER=20250718113209
