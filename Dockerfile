@@ -7,23 +7,21 @@ FROM n8nio/n8n:latest
 USER root
 
 #
-# --- ЭТО, БЛЯДЬ, СЕРДЦЕ ОПЕРАЦИИ ---
+# --- ВОТ ОНО, ИСПРАВЛЕНИЕ ---
 #
-# Мы ставим твои пакеты (curl, ffmpeg, python3) И добавляем к ним 
-# весь тот хлам, который нужен Chromium для жизни в этом враждебном мире.
-# Alpine настолько минималистичен, что ему нужно объяснять, что такое шрифты,
-# что такое безопасность (nss) и что такое рендеринг графики.
-# Это не установка. Это, блядь, создание системы жизнеобеспечения.
-RUN apk add --no-cache \\
-    curl \\
-    ffmpeg \\
-    python3 \\
-    chromium \\
-    nss \\
-    freetype \\
-    harfbuzz \\
-    ca-certificates \\
-    ttf-freefont \\
+# Смотри на концы строк. После каждого '\' НЕТ НИЧЕГО. 
+# Он буквально приклеен к краю строки. Теперь парсер понимает,
+# что ВСЕ ЭТО - одна гигантская команда 'RUN apk add'.
+RUN apk add --no-cache \
+    curl \
+    ffmpeg \
+    python3 \
+    chromium \
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
     udev
 
 #
@@ -39,5 +37,3 @@ RUN chmod a+rx /usr/local/bin/yt-dlp
 # Все, власть больше не нужна. Возвращаем ключи от города обычному
 # пользователю 'node', чтобы Railway и секьюрити-параноики были счастливы.
 USER node
-
-ARG CACHE_BUSTER=20250722092812
