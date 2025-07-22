@@ -36,3 +36,5 @@ USER node
 WORKDIR /home/node/.n8n/nodes/
 # И он, как полноправный хозяин, без проблем строит себе сарай для инструментов.
 RUN npm install n8n-nodes-youtube-transcript
+
+ARG CACHE_BUSTER=20250722222523
