@@ -38,4 +38,4 @@ WORKDIR /home/node/.n8n/nodes/
 RUN npm install n8n-nodes-youtube-transcript
 
 
-ARG CACHE_BUSTER=20260116222711
+ARG CACHE_BUSTER=20260120222803
